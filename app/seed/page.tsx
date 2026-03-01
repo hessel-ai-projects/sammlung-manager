@@ -373,7 +373,7 @@ export default function SeedPage() {
               }
             </div>
           ))}
-        </div㸾
+        </div>
       )}
     </div>
   );
