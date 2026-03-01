@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
@@ -14,7 +14,7 @@ export async function POST() {
     
     // Clear auth cookies
     const cookieStore = await cookies();
-    const authCookies = ['sb-access-token', 'sb-refresh-token'];
+    const authCookies = ['sb-access-token', 'sb-refresh-token', 'sb-|pcfltspauth|token'];
     
     for (const cookieName of authCookies) {
       cookieStore.delete(cookieName);
@@ -23,12 +23,14 @@ export async function POST() {
     console.error('Sign out error:', error);
   }
 
+  // Get the host from request for proper redirect
+  const url = new URL(request.url);
+  const redirectUrl = `${url.protocol}//${url.host}/login`;
+
   // Redirect to login
-  return NextResponse.redirect(new URL('/login', 'http://localhost'), {
-    status: 302,
-  });
+  return NextResponse.redirect(redirectUrl, { status: 302 });
 }
 
-export async function GET() {
-  return POST();
+export async function GET(request: Request) {
+  return POST(request);
 }

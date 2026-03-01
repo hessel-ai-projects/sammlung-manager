@@ -1,7 +1,20 @@
-import { createCollection } from '../lib/collections';
-import { createZippo } from '../lib/zippos';
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
 
-// Alle Collections und Zippos aus PLAN.md
+// Load env vars
+dotenv.config({ path: '.env.local' });
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Fehlende Umgebungsvariablen:');
+  console.error('  NEXT_PUBLIC_SUPABASE_URL:', !!supabaseUrl);
+  console.error('  SUPABASE_SERVICE_ROLE_KEY:', !!supabaseKey);
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const collections = [
   {
@@ -24,20 +37,20 @@ const collections = [
       { name: "Apple Records Logo", search_term: "Zippo Apple Records" },
       { name: "Beatles Logo", search_term: "Zippo Beatles Logo" },
       { name: "Love Album", search_term: "Zippo Beatles Love" },
-      { name: "John Lennon Imagine Peace 1", search_term: "Zippo John Lennon Imagine Peace" },
-      { name: "John Lennon Imagine Peace 2", search_term: "Zippo John Lennon Peace" },
-      { name: "John Lennon Imagine Peace 3", search_term: "Zippo Lennon Imagine" },
-      { name: "John Lennon Imagine Peace 4", search_term: "Zippo John Lennon" },
-      { name: "Ägypten Pharao Gold 1", search_term: "Zippo Egypt Pharaoh Gold" },
-      { name: "Ägypten Pharao Gold 2", search_term: "Zippo Egyptian Pharaoh" },
-      { name: "Ägypten Pharao Gold 3", search_term: "Zippo Egypt Gold" },
-      { name: "Ägypten Pharao Gold 4", search_term: "Zippo Pharaoh Relief" },
-      { name: "Ägypten Pharao Gold 5", search_term: "Zippo Egypt Relief" },
-      { name: "Ägypten Pharao Silber 1", search_term: "Zippo Egypt Pharaoh Silver" },
-      { name: "Ägypten Pharao Silber 2", search_term: "Zippo Egyptian Silver" },
-      { name: "Ägypten Pharao Silber 3", search_term: "Zippo Egypt Silver" },
-      { name: "Ägypten Pharao Silber 4", search_term: "Zippo Pharaoh Silver" },
-      { name: "Ägypten Pharao Silber 5", search_term: "Zippo Silver Egypt" },
+      { name: "John Lennon Imagine 1", search_term: "Zippo John Lennon Imagine Peace" },
+      { name: "John Lennon Imagine 2", search_term: "Zippo John Lennon Peace" },
+      { name: "John Lennon Imagine 3", search_term: "Zippo Lennon Imagine" },
+      { name: "John Lennon Imagine 4", search_term: "Zippo John Lennon" },
+      { name: "Ägypten Gold 1", search_term: "Zippo Egypt Pharaoh Gold" },
+      { name: "Ägypten Gold 2", search_term: "Zippo Egyptian Pharaoh" },
+      { name: "Ägypten Gold 3", search_term: "Zippo Egypt Gold" },
+      { name: "Ägypten Gold 4", search_term: "Zippo Pharaoh Relief" },
+      { name: "Ägypten Gold 5", search_term: "Zippo Egypt Relief" },
+      { name: "Ägypten Silber 1", search_term: "Zippo Egypt Pharaoh Silver" },
+      { name: "Ägypten Silber 2", search_term: "Zippo Egyptian Silver" },
+      { name: "Ägypten Silber 3", search_term: "Zippo Egypt Silver" },
+      { name: "Ägypten Silber 4", search_term: "Zippo Pharaoh Silver" },
+      { name: "Ägypten Silber 5", search_term: "Zippo Silver Egypt" },
       { name: "Beatles Cartoon 1", search_term: "Zippo Beatles Cartoon" },
       { name: "Beatles Cartoon 2", search_term: "Zippo Beatles Animation" },
       { name: "Beatles Foto 1", search_term: "Zippo Beatles Photo" },
@@ -51,7 +64,7 @@ const collections = [
   },
   {
     name: "Guy Harvey Marine Art",
-    description: "~20 Stück - Fische, Meerestiere, Marine Life",
+    description: "~20 Stück - Fische, Meerestiere",
     zippos: [
       { name: "Marlin", search_term: "Zippo Guy Harvey Marlin" },
       { name: "Mahi-Mahi", search_term: "Zippo Guy Harvey Mahi Mahi" },
@@ -59,11 +72,11 @@ const collections = [
       { name: "Tarpon", search_term: "Zippo Guy Harvey Tarpon" },
       { name: "Tuna", search_term: "Zippo Guy Harvey Tuna" },
       { name: "Bass", search_term: "Zippo Guy Harvey Bass" },
-      { name: "Native American Landscape 1", search_term: "Zippo Guy Harvey Landscape" },
-      { name: "Native American Landscape 2", search_term: "Zippo Guy Harvey Native" },
-      { name: "Native American Landscape 3", search_term: "Zippo Guy Harvey Indian" },
-      { name: "Native American Landscape 4", search_term: "Zippo Guy Harvey Chief" },
-      { name: "Native American Landscape 5", search_term: "Zippo Guy Harvey Tribe" },
+      { name: "Native Landscape 1", search_term: "Zippo Guy Harvey Landscape" },
+      { name: "Native Landscape 2", search_term: "Zippo Guy Harvey Native" },
+      { name: "Native Landscape 3", search_term: "Zippo Guy Harvey Indian" },
+      { name: "Native Landscape 4", search_term: "Zippo Guy Harvey Chief" },
+      { name: "Native Landscape 5", search_term: "Zippo Guy Harvey Tribe" },
       { name: "Rote Frau Pop Art", search_term: "Zippo Guy Harvey Woman Pop Art" },
       { name: "Guy Harvey Signiert", search_term: "Zippo Guy Harvey signed" },
       { name: "Guy Harvey Logo", search_term: "Zippo Guy Harvey Logo" },
@@ -77,7 +90,7 @@ const collections = [
   },
   {
     name: "Scrimshaw / Natur",
-    description: "~20 Stück - Scrimshaw-Stil, Tiere, Landschaften",
+    description: "~20 Stück - Scrimshaw-Stil, Tiere",
     zippos: [
       { name: "Scrimshaw Löwe", search_term: "Zippo Scrimshaw Lion" },
       { name: "Scrimshaw Bär", search_term: "Zippo Scrimshaw Bear" },
@@ -96,14 +109,14 @@ const collections = [
       { name: "Southern Comfort SoCo", search_term: "Zippo Southern Comfort" },
       { name: "Scrimshaw Wolf", search_term: "Zippo Scrimshaw Wolf" },
       { name: "Scrimshaw Hirsch", search_term: "Zippo Scrimshaw Deer" },
-      { name: "Scrimhaw Adler", search_term: "Zippo Scrimshaw Eagle" },
+      { name: "Scrimshaw Adler 2", search_term: "Zippo Scrimshaw Eagle" },
       { name: "Scrimshaw Bison", search_term: "Zippo Scrimshaw Bison" },
       { name: "Scrimshaw Elch", search_term: "Zippo Scrimshaw Moose" },
     ]
   },
   {
     name: "Josef Bauer Femina Universa",
-    description: "~20 Stück - Städte-Serie, Teki, Josef Bauer Artwork",
+    description: "~20 Stück - Städte-Serie, Teki",
     zippos: [
       { name: "Femina Universa Vienna", search_term: "Zippo Femina Universa Vienna" },
       { name: "Femina Universa New York", search_term: "Zippo Femina Universa New York" },
@@ -129,7 +142,7 @@ const collections = [
   },
   {
     name: "Windy Girl",
-    description: "~40 Stück - Windy Girl in verschiedenen Farben, 2 Rahmen",
+    description: "~40 Stück - Windy Girl in verschiedenen Farben",
     zippos: [
       { name: "Windy Girl Rosa", search_term: "Zippo Windy Girl Pink" },
       { name: "Windy Girl Grün", search_term: "Zippo Windy Girl Green" },
@@ -144,7 +157,7 @@ const collections = [
       { name: "Windy Girl Orange", search_term: "Zippo Windy Girl Orange" },
       { name: "Windy Girl Blau", search_term: "Zippo Windy Girl Blue" },
       { name: "Windy Girl Beige", search_term: "Zippo Windy Girl Beige" },
-      { name: "Windy Girl Pink", search_term: "Zippo Windy Girl Hot Pink" },
+      { name: "Windy Girl Hot Pink", search_term: "Zippo Windy Girl Hot Pink" },
       { name: "Windy Girl Navy", search_term: "Zippo Windy Girl Navy" },
       { name: "Windy Girl Mint", search_term: "Zippo Windy Girl Mint" },
       { name: "Windy Girl 3D Relief", search_term: "Zippo Windy Girl 3D" },
@@ -175,7 +188,7 @@ const collections = [
   },
   {
     name: "Landmarks & Animals & Jeans",
-    description: "~20 Stück - Landmark-Serie, Jeans/Denim, Tier-Gravuren",
+    description: "~20 Stück - Landmark-Serie, Jeans/Denim, Tiere",
     zippos: [
       { name: "Landmark Big Ben", search_term: "Zippo Landmark Big Ben" },
       { name: "Landmark Freiheitsstatue", search_term: "Zippo Landmark Statue of Liberty" },
@@ -235,7 +248,7 @@ const collections = [
       { name: "West Tiger 4", search_term: "Zippo West Löwe" },
       { name: "West Tiger 5", search_term: "Zippo West Leopard" },
       { name: "Gold Jubiläum 1996", search_term: "Zippo Gold Anniversary 1996" },
-      { name: "Gold Jubiläum Stars", search_term: "Zippo Gold Stars" },
+      { name: "Gold Stars", search_term: "Zippo Gold Stars" },
       { name: "Gold Jubiläum 1995", search_term: "Zippo Gold Anniversary 1995" },
       { name: "Gold Welcome 21st Century", search_term: "Zippo Gold Welcome 21st Century" },
       { name: "Gold Eagle 2000", search_term: "Zippo Gold Eagle 2000" },
@@ -250,50 +263,62 @@ const collections = [
       { name: "West Komplett", search_term: "Zippo West Collection" },
       { name: "Gold Komplett", search_term: "Zippo Gold Collection" },
     ]
-  }
+  },
 ];
 
 async function seedDatabase() {
   console.log('Starting database seed...\n');
+  console.log(`Supabase URL: ${supabaseUrl?.substring(0, 30)}...`);
+  console.log(`Service Key: ${supabaseKey ? '****' + supabaseKey.slice(-4) : 'missing'}\n`);
 
   for (const collection of collections) {
     console.log(`Creating collection: ${collection.name}...`);
     
-    const createdCollection = await createCollection({
-      name: collection.name,
-      description: collection.description,
-    });
+    const { data: colData, error: colError } = await supabase
+      .from('collections')
+      .insert({
+        name: collection.name,
+        description: collection.description,
+      })
+      .select()
+      .single();
 
-    console.log(`  ✓ Collection created (ID: ${createdCollection.id})`);
+    if (colError) {
+      console.error(`  ✗ Failed to create collection:`, colError.message);
+      continue;
+    }
+
+    console.log(`  ✓ Collection created (ID: ${colData.id})`);
     console.log(`  Adding ${collection.zippos.length} Zippos...`);
 
+    let createdCount = 0;
     for (let i = 0; i < collection.zippos.length; i++) {
       const zippo = collection.zippos[i];
-      try {
-        await createZippo({
-          collection_id: createdCollection.id,
+      const { error: zippoError } = await supabase
+        .from('zippos')
+        .insert({
+          collection_id: colData.id,
           name: zippo.name,
           search_term: zippo.search_term,
           condition: 'new_unused_with_box',
           position: i + 1,
         });
+      
+      if (zippoError) {
+        console.error(`    ✗ ${zippo.name}:`, zippoError.message);
+      } else {
+        createdCount++;
         process.stdout.write('.');
-      } catch (error) {
-        console.error(`\n  ✗ Failed to create ${zippo.name}:`, error);
       }
     }
     
-    console.log('\n  ✓ Done\n');
+    console.log(`\n  ✓ ${createdCount}/${collection.zippos.length} Zippos created\n`);
   }
 
+  const totalZippos = collections.reduce((sum, c) => sum + c.zippos.length, 0);
   console.log('\n✅ Database seed complete!');
   console.log(`  ${collections.length} Collections`);
-  console.log(`  ${collections.reduce((sum, c) => sum + c.zippos.length, 0)} Zippos`);
+  console.log(`  ${totalZippos} Zippos total`);
 }
 
-// Run if called directly
-if (require.main === module) {
-  seedDatabase().catch(console.error);
-}
-
-export { seedDatabase };
+seedDatabase().catch(console.error);
