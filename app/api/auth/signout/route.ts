@@ -1,34 +1,56 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const cookieStore = request.headers.get('cookie') || '';
+    
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          // Parse cookies from header
+          return cookieStore.split('; ').filter(Boolean).map(cookie => {
+            const [name, ...rest] = cookie.split('=');
+            return { name, value: rest.join('=') };
+          });
+        },
+        setAll(cookiesToSet) {
+          // Cookies werden durch Response-Headers gesetzt
+        },
+      },
+    });
     
     // Sign out from Supabase
     await supabase.auth.signOut();
     
-    // Clear auth cookies
-    const cookieStore = await cookies();
-    const authCookies = ['sb-access-token', 'sb-refresh-token', 'sb-|pcfltspauth|token'];
-    
-    for (const cookieName of authCookies) {
-      cookieStore.delete(cookieName);
-    }
   } catch (error) {
     console.error('Sign out error:', error);
   }
 
-  // Get the host from request for proper redirect
+  // Create response with redirect
   const url = new URL(request.url);
-  const redirectUrl = `${url.protocol}//${url.host}/login`;
+  const response = NextResponse.redirect(`${url.protocol}//${url.host}/login`, { 
+    status: 302 
+  });
 
-  // Redirect to login
-  return NextResponse.redirect(redirectUrl, { status: 302 });
+  // Clear auth cookies by setting them to expire
+  const authCookies = [
+    'sb-access-token',
+    'sb-refresh-token', 
+    'sb-|pcfltspauth|token',
+  ];
+  
+  for (const name of authCookies) {
+    response.cookies.set(name, '', { 
+      maxAge: 0,
+      path: '/',
+    });
+  }
+
+  return response;
 }
 
 export async function GET(request: Request) {
