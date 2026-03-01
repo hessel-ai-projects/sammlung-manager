@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Zippo Collection Manager",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const authenticated = await isAuthenticated();
 

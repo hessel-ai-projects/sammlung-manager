@@ -1,54 +1,55 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const AUTH_COOKIE_NAMES = [
-  'sb-access-token',
-  'sb-refresh-token',
-  'sb-|pcfltspauth|token',
-];
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // Check if Supabase is configured
 function isSupabaseConfigured(): boolean {
-  return !!(supabaseUrl && supabaseServiceKey);
+  return !!(supabaseUrl && supabaseAnonKey);
 }
 
-// Check if we're in a static generation context
-function isStaticGeneration(): boolean {
-  return process.env.NEXT_PHASE === 'phase-production-build' || 
-         process.env.NEXT_PHASE === 'phase-export';
+// Create server client for auth checks
+async function getServerClient() {
+  const cookieStore = await cookies();
+  
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // Called from Server Component
+        }
+      },
+    },
+  });
 }
 
 // Check if user is authenticated via Supabase
 export async function isAuthenticated(): Promise<boolean> {
   if (!isSupabaseConfigured()) {
-    return false;
-  }
-
-  // Skip auth check during static generation
-  if (isStaticGeneration()) {
+    console.log('Supabase not configured');
     return false;
   }
 
   try {
-    const cookieStore = await cookies();
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get session from cookies
+    const supabase = await getServerClient();
     const { data: { session }, error } = await supabase.auth.getSession();
 
     if (error) {
+      console.log('Auth check error:', error.message);
       return false;
     }
 
+    console.log('Auth check:', session ? 'authenticated' : 'not authenticated');
     return session !== null;
   } catch (error: any) {
-    // Handle dynamic server usage error gracefully
-    if (error?.message?.includes('DYNAMIC_SERVER_USAGE')) {
-      return false;
-    }
     console.error('Auth check error:', error);
     return false;
   }
@@ -60,12 +61,8 @@ export async function getCurrentUser() {
     return null;
   }
 
-  if (isStaticGeneration()) {
-    return null;
-  }
-
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = await getServerClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
     if (error) {
@@ -73,25 +70,9 @@ export async function getCurrentUser() {
     }
 
     return user;
-  } catch (error: any) {
-    if (error?.message?.includes('DYNAMIC_SERVER_USAGE')) {
-      return null;
-    }
+  } catch (error) {
     console.error('Get user error:', error);
     return null;
-  }
-}
-
-// Sign out user
-export async function clearAuthCookies(): Promise<void> {
-  try {
-    const cookieStore = await cookies();
-    
-    for (const name of AUTH_COOKIE_NAMES) {
-      cookieStore.delete(name);
-    }
-  } catch (error) {
-    // Ignore errors during static generation
   }
 }
 
