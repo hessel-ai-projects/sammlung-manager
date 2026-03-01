@@ -3,6 +3,7 @@ import { getTotalValue, getTotalValueHistory } from "@/lib/prices";
 import { getPriceHistory } from "@/lib/prices";
 import Link from "next/link";
 import { TotalValueChart } from "@/components/charts/PriceHistoryChart";
+import UpdatePricesButton from "@/components/update-prices-button";
 
 export const dynamic = "force-dynamic";
 
@@ -41,9 +42,12 @@ export default async function Dashboard() {
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold">Kollektionen</h2>
-        <Link href="/collections/new" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          + Kollektion
-        </Link>
+        <div className="flex items-center gap-3">
+          <UpdatePricesButton />
+          <Link href="/collections/new" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            + Kollektion
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
