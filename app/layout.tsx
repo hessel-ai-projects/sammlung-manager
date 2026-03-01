@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { isAuthenticated } from "@/lib/auth";
+import LogoutButton from "@/components/logout-button";
 
 export const metadata: Metadata = {
   title: "Sammlung Manager",
@@ -19,13 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <a href="/" className="text-xl font-bold">🔥 Sammlung Manager</a>
             {authenticated && (
-              <div className="flex items-center gap-4">
-                <form action="/api/auth/signout" method="POST">
-                  <button type="submit" className="text-sm text-muted-foreground hover:text-foreground">
-                    Abmelden
-                  </button>
-                </form>
-              </div>
+              <LogoutButton />
             )}
           </div>
         </header>
