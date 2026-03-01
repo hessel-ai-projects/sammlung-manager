@@ -2,6 +2,8 @@ import { createCollection } from "@/lib/collections";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function NewCollectionPage() {
   async function handleCreate(formData: FormData) {
     "use server";

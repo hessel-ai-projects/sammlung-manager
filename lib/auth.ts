@@ -15,10 +15,20 @@ function isSupabaseConfigured(): boolean {
   return !!(supabaseUrl && supabaseServiceKey);
 }
 
+// Check if we're in a static generation context
+function isStaticGeneration(): boolean {
+  return process.env.NEXT_PHASE === 'phase-production-build' || 
+         process.env.NEXT_PHASE === 'phase-export';
+}
+
 // Check if user is authenticated via Supabase
 export async function isAuthenticated(): Promise<boolean> {
   if (!isSupabaseConfigured()) {
-    console.warn('Supabase not configured, auth unavailable');
+    return false;
+  }
+
+  // Skip auth check during static generation
+  if (isStaticGeneration()) {
     return false;
   }
 
@@ -30,12 +40,15 @@ export async function isAuthenticated(): Promise<boolean> {
     const { data: { session }, error } = await supabase.auth.getSession();
 
     if (error) {
-      console.error('Auth session error:', error);
       return false;
     }
 
     return session !== null;
-  } catch (error) {
+  } catch (error: any) {
+    // Handle dynamic server usage error gracefully
+    if (error?.message?.includes('DYNAMIC_SERVER_USAGE')) {
+      return false;
+    }
     console.error('Auth check error:', error);
     return false;
   }
@@ -47,17 +60,23 @@ export async function getCurrentUser() {
     return null;
   }
 
+  if (isStaticGeneration()) {
+    return null;
+  }
+
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { data: { user }, error } = await supabase.auth.getUser();
 
     if (error) {
-      console.error('Get user error:', error);
       return null;
     }
 
     return user;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('DYNAMIC_SERVER_USAGE')) {
+      return null;
+    }
     console.error('Get user error:', error);
     return null;
   }
@@ -65,10 +84,14 @@ export async function getCurrentUser() {
 
 // Sign out user
 export async function clearAuthCookies(): Promise<void> {
-  const cookieStore = await cookies();
-  
-  for (const name of AUTH_COOKIE_NAMES) {
-    cookieStore.delete(name);
+  try {
+    const cookieStore = await cookies();
+    
+    for (const name of AUTH_COOKIE_NAMES) {
+      cookieStore.delete(name);
+    }
+  } catch (error) {
+    // Ignore errors during static generation
   }
 }
 
