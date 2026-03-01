@@ -58,8 +58,15 @@ export default function LoginPage() {
 
       // Success - redirect
       console.log('Login successful, redirecting...');
-      router.push('/');
-      router.refresh();
+      
+      // Hard redirect to ensure cookies are set
+      window.location.href = '/';
+      
+      // Fallback: try router navigation
+      setTimeout(() => {
+        router.push('/');
+        router.refresh();
+      }, 100);
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err?.message || 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
